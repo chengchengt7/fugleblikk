@@ -44,3 +44,7 @@ next-env.d.ts
 /AGENTS.md
 /assignment.md
 /PRODUCT_BRIEF.md
+
+# Resumable preparation cache (not sent to visitors)
+.cache/
+data/*.tmp

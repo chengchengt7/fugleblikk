@@ -1,0 +1,48 @@
+name: Refresh bird observations
+on:
+  schedule:
+    - cron: "17 4 1 * *"
+      timezone: "Europe/Oslo"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: refresh-observations
+  cancel-in-progress: false
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - run: npm run test:observations
+      - run: npm run prepare:observations
+        env:
+          OBSERVATION_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+      - run: npm run build
+      - name: Save the completed snapshot
+        id: publish
+        run: |
+          git add data/observed-birds.json
+          if git diff --cached --quiet; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Refresh monthly bird observations"
+            git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Trigger Vercel deployment when a deploy hook is configured
+        if: steps.publish.outputs.changed == 'true'
+        env:
+          DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          if [ -n "$DEPLOY_HOOK" ]; then
+            curl --fail --silent --show-error --request POST "$DEPLOY_HOOK" --output /dev/null
+          fi

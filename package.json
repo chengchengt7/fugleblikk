@@ -7,9 +7,12 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check",
-    "format": "biome format --write"
+    "format": "biome format --write",
+    "prepare:observations": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/prepare-observations.mjs",
+    "test:observations": "node --test scripts/observations.test.mjs"
   },
   "dependencies": {
+    "@turf/boolean-point-in-polygon": "^7.4.0",
     "csv-parse": "^7.0.3",
     "next": "16.4.2",
     "react": "19.3.0",

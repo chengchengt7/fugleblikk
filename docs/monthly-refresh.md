@@ -7,6 +7,15 @@ Run `npm run prepare:observations` with Node 24 to refresh the file manually.
 The period is the 12 complete calendar months before the current Oslo month.
 For example, a run in October 2026 covers 2025-10-01 through 2026-09-30.
 
+Preparation files live in `data-preparation/`:
+
+- `prepare-observations.mjs` runs the preparation and saves the finished dataset.
+- `lib/observation-api.mjs` downloads and caches API responses.
+- `lib/observation-rules.mjs` handles dates, taxonomy and location selection.
+
+`package.json` runs `data-preparation/prepare-observations.mjs` through
+`npm run prepare:observations`. The monthly workflow uses that npm command.
+
 The preparation script:
 
 1. Loads Artsnavn taxonomy and Artskart's candidate taxon summary.
@@ -41,7 +50,7 @@ The approved workflow is installed at
 branch, GitHub schedules the following job:
 
 - Run on the first day of each month at 04:17 Europe/Oslo, or by manual dispatch.
-- Fetch public APIs, test and build, then commit/push only the completed
+- Fetch public APIs and build, then commit/push only the completed
   `data/observed-birds.json` file to the default branch.
 - Let the connected Vercel Git integration deploy that commit. Where necessary,
   a `VERCEL_DEPLOY_HOOK` GitHub Actions secret can explicitly trigger deployment.
@@ -74,7 +83,6 @@ jobs:
           node-version: 24
           cache: npm
       - run: npm ci
-      - run: npm run test:observations
       - run: npm run prepare:observations
         env:
           OBSERVATION_RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}

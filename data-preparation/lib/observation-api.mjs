@@ -97,11 +97,8 @@ export async function getPage(month, taxons, pageIndex, cache) {
       CollectedDate: o.CollectedDate,
       Longitude: o.Longitude,
       Latitude: o.Latitude,
-      Precision: o.Precision,
       ObsUrl: o.ObsUrl,
       DetailUrl: o.DetailUrl,
-      County: o.County,
-      Country: o.Country,
     }));
     await mkdir(cache, { recursive: true });
     await writeFile(`${path}.tmp`, gzipSync(JSON.stringify(data)));

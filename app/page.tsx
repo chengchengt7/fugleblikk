@@ -1,4 +1,5 @@
-import { getObservedBirds } from "@/lib/observed-birds";
+import saved from "@/data/observed-birds.json";
+import type { ObservationSnapshot } from "@/types/bird";
 import "./birds.css";
 
 function formatDate(iso: string) {
@@ -11,7 +12,7 @@ function formatDate(iso: string) {
 }
 
 export default function Home() {
-  const snapshot = getObservedBirds();
+  const snapshot: ObservationSnapshot = saved;
   return (
     <main className="bird-page">
       <p className="bird-eyebrow">Fugleblikk · Observasjoner fra Artskart</p>
@@ -50,18 +51,6 @@ export default function Home() {
                 <dt>Breddegrad</dt>
                 <dd>{bird.latitude}</dd>
               </div>
-              <div>
-                <dt>Område</dt>
-                <dd>{bird.region}</dd>
-              </div>
-              <div>
-                <dt>Oppgitt presisjon</dt>
-                <dd>
-                  {bird.precisionMeters === null
-                    ? "Ikke oppgitt"
-                    : `${bird.precisionMeters} m`}
-                </dd>
-              </div>
             </dl>
             {bird.sourceUrl && (
               <a href={bird.sourceUrl} target="_blank" rel="noreferrer">
@@ -71,15 +60,6 @@ export default function Home() {
           </li>
         ))}
       </ul>
-      <footer className="bird-note">
-        Observasjoner:{" "}
-        <a href="https://artskart.artsdatabanken.no/">
-          Artskart / Artsdatabanken
-        </a>
-        . Navn: Artsnavn. Geografisk avgrensning:{" "}
-        <a href="https://www.marineregions.org/">Marine Regions / VLIZ</a>, land
-        og maritime soner, versjon 4.
-      </footer>
     </main>
   );
 }

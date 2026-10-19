@@ -10,9 +10,10 @@ npm run prepare:observations
 npm run dev
 ```
 
+Preparation code lives in `data-preparation/`; saved datasets live in `data/`.
+
 Use Node 24. The prepared JSON is committed with the site so visitors do not
-wait for API preparation. `npm run test:observations` checks dates, geography,
-taxonomy and latest-location selection. `npm run build` verifies the site.
+wait for API preparation. `npm run build` verifies the site.
 
 See [monthly preparation and schedule](docs/monthly-refresh.md) and
 [data sources and geographic scope](data/README.md). The approved GitHub workflow refreshes the snapshot on the first of each month

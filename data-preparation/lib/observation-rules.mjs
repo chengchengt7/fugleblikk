@@ -103,17 +103,13 @@ export function selectLatest(latest, observation, bird, period, scope) {
     )
   )
     return "outsideScope";
-  const precision = parseCoordinate(observation.Precision);
   latest.set(bird.id, {
     ...bird,
     observedDate: date,
     longitude,
     latitude,
-    precisionMeters:
-      Number.isFinite(precision) && precision >= 0 ? precision : null,
     observationId: observation.Id,
     sourceUrl: observation.ObsUrl || observation.DetailUrl || null,
-    region: observation.County || observation.Country || "Norske havområder",
   });
   return "selected";
 }

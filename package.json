@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "biome check",
     "format": "biome format --write",
-    "prepare:observations": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON data-preparation/prepare-observations.mjs"
+    "prepare:observations": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON data-preparation/prepare-observations.mjs",
+    "prepare:media": "node data-preparation/prepare-media.mjs"
   },
   "dependencies": {
     "@turf/boolean-point-in-polygon": "^7.4.0",

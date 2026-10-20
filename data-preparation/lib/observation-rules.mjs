@@ -109,7 +109,6 @@ export function selectLatest(latest, observation, bird, period, scope) {
     longitude,
     latitude,
     observationId: observation.Id,
-    sourceUrl: observation.ObsUrl || observation.DetailUrl || null,
   });
   return "selected";
 }

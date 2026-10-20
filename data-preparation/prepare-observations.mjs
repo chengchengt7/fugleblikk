@@ -1,4 +1,7 @@
+import { execFile } from "node:child_process";
 import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
+import { promisify } from "node:util";
+import { enrichBirds } from "./lib/bird-media.mjs";
 import {
   getCandidates,
   getPage,
@@ -92,9 +95,18 @@ const birds = [...latest.values()].sort((a, b) =>
 );
 if (!birds.length)
   throw new Error("No usable observations; previous snapshot preserved");
+let previousBirds = [];
+try {
+  previousBirds =
+    JSON.parse(await readFile("data/observed-birds.json", "utf8")).birds || [];
+} catch (error) {
+  if (error.code !== "ENOENT") throw error;
+}
+await enrichBirds(birds, previousBirds);
 const snapshot = {
   period,
   preparedAt: new Date().toISOString(),
+  mediaPreparedAt: new Date().toISOString(),
   totalSpecies: birds.length,
   candidateSpecies: candidates.size,
   stats,
@@ -106,5 +118,9 @@ await writeFile(
   "data/observed-birds.json.tmp",
   `${JSON.stringify(snapshot, null, 2)}\n`,
 );
+await promisify(execFile)(process.env.CUTOUT_PYTHON || "python3", [
+  "data-preparation/prepare-cutouts.py",
+  "data/observed-birds.json.tmp",
+]);
 await rename("data/observed-birds.json.tmp", "data/observed-birds.json");
 console.log(`Saved ${birds.length} species to data/observed-birds.json`);

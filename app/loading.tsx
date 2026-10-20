@@ -1,5 +1,3 @@
-import "./birds.css";
-
 export default function Loading() {
   return (
     <main className="bird-page">

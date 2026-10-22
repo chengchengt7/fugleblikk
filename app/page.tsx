@@ -1,6 +1,8 @@
-import BirdCard from "@/components/BirdCard/BirdCard";
+import BirdMap from "@/components/BirdMap/BirdMap";
+import BirdSoundMix from "@/components/BirdSoundMix/BirdSoundMix";
 import HeroMessage from "@/components/HeroMessage/HeroMessage";
 import saved from "@/data/observed-birds.json";
+import { prepareBirdMap } from "@/lib/bird-map";
 import type { ObservationSnapshot } from "@/types/bird";
 import "./page.css";
 
@@ -12,23 +14,12 @@ export default function Home() {
         totalSpecies={snapshot.totalSpecies}
         period={snapshot.period}
       />
-      <ul className="bird-list">
-        {snapshot.birds.map((bird) => (
-          <li className="bird-comparison" key={bird.id}>
-            <BirdCard bird={bird} />
-            {bird.media?.cardPhoto?.cutoutUrl && (
-              <div className="bird-cutout">
-                {/* biome-ignore lint/performance/noImgElement: local cutout is already optimized as WebP */}
-                <img
-                  src={bird.media.cardPhoto.cutoutUrl}
-                  alt={`${bird.norwegianName || bird.scientificName} cutout`}
-                  loading="lazy"
-                />
-              </div>
-            )}
-          </li>
-        ))}
-      </ul>
+      <BirdSoundMix
+        recordings={snapshot.birds.flatMap((bird) =>
+          bird.media?.sound ? [bird.media.sound.fileUrl] : [],
+        )}
+      />
+      <BirdMap slots={prepareBirdMap(snapshot.birds)} />
     </main>
   );
 }

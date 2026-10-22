@@ -48,7 +48,6 @@ export default async function BirdPage({
         <div className="bird-detail-gallery">
           {(bird.media?.detailPhotos || []).map((photo) => (
             <figure key={photo.sourceUrl}>
-              {/* biome-ignore lint/performance/noImgElement: prepared remote photo uses its chosen large URL */}
               <img
                 src={photo.url}
                 alt={bird.norwegianName || bird.scientificName}
@@ -73,7 +72,7 @@ export default async function BirdPage({
             controls
             controlsList="nodownload noplaybackrate novolume"
             preload="none"
-            src={`/api/xeno-audio?id=${bird.media.sound.id}`}
+            src={bird.media.sound.fileUrl}
           />
           <p>
             <a

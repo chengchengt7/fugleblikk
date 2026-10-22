@@ -12,7 +12,6 @@
   max-width: 1000px;
   margin: 0 auto;
   padding: 40px 20px 70px;
-  color: #233c31;
   font-family: system-ui, sans-serif;
 }
 
@@ -61,5 +60,5 @@
 }
 
 .bird-detail-page a {
-  color: #285442;
+  color: var(--color-300);
 }

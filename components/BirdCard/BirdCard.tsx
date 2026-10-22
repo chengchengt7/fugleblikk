@@ -1,43 +1,63 @@
 import Link from "next/link";
-import type { ObservedBird } from "@/types/bird";
+import type { BirdCardBird } from "@/types/bird";
 import "./BirdCard.css";
 
-export default function BirdCard({ bird }: { bird: ObservedBird }) {
-  const norwegianName = bird.norwegianName[0].toLocaleUpperCase("nb-NO") + bird.norwegianName.slice(1)
-    
+export default function BirdCard({
+  bird,
+  onClose,
+}: {
+  bird: BirdCardBird;
+  onClose: () => void;
+}) {
+  const norwegianName =
+    bird.norwegianName[0].toLocaleUpperCase("nb-NO") +
+    bird.norwegianName.slice(1);
+
   return (
-    <article className="bird-list-item">
-      {bird.media?.cardPhoto ? (
-        <Link className="bird-card-photo" href={`/birds/${bird.id}`}>
+    <article className="bird-card">
+      <button
+        type="button"
+        className="close-button"
+        onClick={onClose}
+        aria-label="Close bird card"
+      >
+        <img src="/icons/close.svg" alt="" />
+      </button>
+      <Link href={`/birds/${bird.id}`}>
+        {bird.media?.cardPhoto ? (
           <img
             src={bird.media.cardPhoto.url}
-            alt={bird.norwegianName}
+            alt=""
             loading="lazy"
           />
-        </Link>
-      ) : (
-        <div className="bird-card-photo bird-card-photo-empty">No photo</div>
-      )}
-      <h3>{norwegianName}</h3>
-      <p className="bird-english-name">
-        {bird.media?.englishName || "English name unavailable"}
-      </p>
-      <p className="bird-scientific-name">
-        <i>{bird.scientificName}</i>
-      </p>
-      {bird.media?.sound ? (
-        <audio
-          controls
-          controlsList="nodownload noplaybackrate novolume"
-          preload="none"
-          src={`/api/xeno-audio?id=${bird.media.sound.id}`}
-          aria-label={`${bird.norwegianName}'s recording`}
-        />
-      ) : (
-        <p className="bird-sound-unavailable">No recording available</p>
-      )}
-      <Link className="bird-detail-link" href={`/birds/${bird.id}`}>
-        Explore this bird
+        ) : (
+          <div className="photo-empty">No photo</div>
+        )}
+        <div className="card-content">
+          <h3>{norwegianName}</h3>
+          {bird.habitats.length > 0 && (
+            <p className="habitats">
+              <strong>Levested:</strong> {bird.habitats.join(", ")}
+            </p>
+          )}
+          {bird.media?.englishName && (
+            <p className="english-name">
+              <i>{bird.media.englishName}</i>
+            </p>
+          )}
+          <p className="scientific-name">{bird.scientificName}</p>
+          {bird.media?.sound ? (
+            <audio
+              controls
+              controlsList="nodownload noplaybackrate novolume"
+              preload="none"
+              src={bird.media.sound.fileUrl}
+              aria-label={`${bird.norwegianName}'s recording`}
+            />
+          ) : (
+            <p className="sound-unavailable">No recording available</p>
+          )}
+        </div>
       </Link>
     </article>
   );

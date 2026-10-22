@@ -1,6 +1,18 @@
 :root {
   font-family: system-ui, sans-serif;
 
+  --color-primary: #2b302d;
+  --color-primary-light: #e7ffb8;
+
+  --color-100: #fff;
+  --color-200: #dfdfdf;
+  --color-300: #bfbfbf;
+  --color-400: #9f9f9f;
+  --color-500: #808080;
+  --color-600: #606060;
+  --color-700: #404040;
+  --color-800: #202020;
+  --color-900: #000;
 }
 
 *,
@@ -11,3 +23,36 @@
   padding: 0;
 }
 
+body {
+  background-color: var(--color-primary);
+  color: var(--color-100);
+}
+
+h3 {
+  font-weight: 500;
+  overflow-wrap: break-word;
+}
+
+img,
+video,
+svg {
+  display: inline-block;
+  max-width: 100%;
+}
+
+button,
+input,
+select {
+  font: inherit;
+  border: 0;
+  color: inherit;
+}
+
+ul {
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}

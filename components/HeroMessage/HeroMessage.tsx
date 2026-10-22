@@ -1,5 +1,3 @@
-import "./HeroMessage.css";
-
 function formatDate(iso: string) {
   return new Intl.DateTimeFormat("nb-NO", {
     day: "numeric",
@@ -20,7 +18,7 @@ export default function HeroMessage({
     <div className="hero-message">
       <h5>{totalSpecies} observerte fuglearter</h5>
       <p>
-        {formatDate(period.from)}–{formatDate(period.to)}.
+        {formatDate(period.from)}-{formatDate(period.to)}.
       </p>
     </div>
   );

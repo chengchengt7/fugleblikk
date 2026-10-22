@@ -1,7 +1,16 @@
+type BirdPhoto = {
+  url: string;
+  cutoutUrl?: string;
+  sourceUrl: string;
+  attribution: string;
+  license: string;
+};
+
 export type ObservedBird = {
   id: number;
   norwegianName: string;
   scientificName: string;
+  habitats: string[];
   observedDate: string;
   longitude: number;
   latitude: number;
@@ -17,7 +26,6 @@ export type ObservedBird = {
       sourceUrl: string | null;
     } | null;
     sound: {
-      id: string;
       fileUrl: string;
       sourceUrl: string;
       recordist: string;
@@ -28,12 +36,16 @@ export type ObservedBird = {
   };
 };
 
-export type BirdPhoto = {
-  url: string;
-  cutoutUrl?: string;
-  sourceUrl: string;
-  attribution: string;
-  license: string;
+export type BirdCardBird = {
+  id: number;
+  norwegianName: string;
+  scientificName: string;
+  habitats: string[];
+  media?: {
+    englishName: string | null;
+    cardPhoto: { url: string } | null;
+    sound: { fileUrl: string } | null;
+  };
 };
 
 export type ObservationSnapshot = {

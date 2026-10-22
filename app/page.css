@@ -1,43 +1,4 @@
-.bird-page {
-  min-height: 100vh;
-  padding: 48px clamp(20px, 4vw, 64px) 80px;
-  background: #202322;
-  color: #f1f3ef;
-}
-
 .bird-page .hero-message {
-  max-width: 1440px;
-  margin: 0 auto 32px;
-}
-
-.bird-list {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 540px), 1fr));
-  gap: 32px;
-  max-width: 1440px;
-  margin: 0 auto;
-  list-style: none;
-}
-
-.bird-comparison {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 16px;
-  align-items: center;
-}
-
-.bird-cutout {
-  display: grid;
-  min-width: 0;
-  height: 100%;
-  max-height: 340px;
-  place-items: center;
-}
-
-.bird-cutout img {
-  display: block;
-  width: 100%;
-  max-height: 100%;
-  object-fit: contain;
-  filter: drop-shadow(0 8px 14px #0008);
+  position: absolute;
+  z-index: 2;
 }

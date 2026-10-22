@@ -1,0 +1,141 @@
+.bird-map {
+  position: relative;
+  height: 100svh;
+  min-height: 560px;
+  overflow: hidden;
+
+  .globe {
+    position: relative;
+    height: 100%;
+    background: var(--color-900);
+
+    .maplibregl-canvas {
+      filter: brightness(0.7);
+    }
+  
+    .maplibregl-canvas-container {
+      cursor: grab;
+
+      &:active {
+        cursor: grabbing;
+      }
+    }
+
+    .maplibregl-marker {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    .maplibregl-popup {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    .maplibregl-popup-content {
+      pointer-events: auto;
+    }
+  }
+
+  .bird,
+  .bird-shadow {
+    aspect-ratio: 1;
+    background: transparent;
+  }
+
+  .bird {
+    z-index: 1;
+    cursor: pointer;
+
+    &:hover {
+      z-index: 2;
+    }
+
+    &:hover img {
+      animation: bird-hop 500ms ease-in-out 1;
+      filter: brightness(1.2);
+    }
+
+    &:hover::after {
+      content: attr(data-name);
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 50%;
+      translate: -50% 0;
+      background-color: var(--color-primary);
+      font-size: 0.875rem;
+      padding: 0.1rem 0.25rem;
+      border: 1px solid var(--color-600);
+      border-radius: 0.2rem;
+      pointer-events: none;
+    }
+  }
+
+  .bird-shadow {
+    pointer-events: none;
+  }
+
+  .bird img,
+  .bird-shadow img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .bird-shadow img {
+    transform: translate(12px, 16px);
+    filter: brightness(0) blur(3px) drop-shadow(0 0 5px var(--color-900));
+    opacity: 60%  
+  }
+
+  .controls {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 1rem;
+    display: grid;
+    gap: 0.5rem;
+    z-index: 3;
+    
+    button {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border: 1px solid var(--color-600);
+      border-radius: 0.5rem;
+      background: var(--color-900);
+      cursor: pointer;
+
+      &:hover {
+        background: var(--color-primary);
+        border: none;
+      } 
+
+      img {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  }
+
+  .attribution {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.25rem;
+  background: var(--color-900);
+  font-size: 11px;
+  }
+}
+
+@keyframes bird-hop {
+  45% { transform: translateY(-6px); }
+}

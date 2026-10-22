@@ -5,17 +5,15 @@ import {
   WIKIPEDIA_PAGE_SUMMARY_API_ENDPOINT,
   XENO_CANTO_RECORDINGS_API_ENDPOINT,
 } from "../../constants/api.ts";
+import { enrichHabitats } from "./bird-habitat.mjs";
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-let nextInatRequest = 0;
-let nextXenoRequest = 0;
+const nextRequest = new Map();
 
 async function requestJson(url, source) {
   for (let attempt = 0; attempt < 4; attempt++) {
-    const next = source === "iNaturalist" ? nextInatRequest : nextXenoRequest;
-    await wait(Math.max(0, next - Date.now()));
-    if (source === "iNaturalist") nextInatRequest = Date.now() + 1100;
-    else nextXenoRequest = Date.now() + 1100;
+    await wait(Math.max(0, (nextRequest.get(source) || 0) - Date.now()));
+    nextRequest.set(source, Date.now() + 1100);
     try {
       const response = await fetch(url, {
         headers: { "User-Agent": "Fugleblikk/0.1 (bird data preparation)" },
@@ -110,7 +108,6 @@ async function findRecording(name, key) {
     ) || candidates[0];
   if (!recording) return null;
   return {
-    id: recording.id,
     fileUrl: recording.file,
     sourceUrl: recording.url || `https://xeno-canto.org/${recording.id}`,
     recordist: recording.rec || "Xeno-canto",
@@ -196,6 +193,7 @@ function mediaFromTaxon(taxon, sound) {
 }
 
 export async function enrichBirds(birds, previousBirds = []) {
+  await enrichHabitats(birds, previousBirds);
   for (const bird of birds) {
     bird.scientificName = bird.scientificName.trim();
     if (bird.media?.description && !bird.media.description.sourceUrl) {

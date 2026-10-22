@@ -1,6 +1,6 @@
-// biome-ignore-all format: Keep each endpoint on one line for scanning.
 // Artsdatabanken: taxonomy and Norwegian bird names
 const ARTSDATABANKEN_API_ENDPOINT = "https://nortaxa.artsdatabanken.no/api/v1";
+export const ARTSDATABANKEN_SPECIES_PAGE_ENDPOINT = "https://artsdatabanken.no/arter/takson";
 
 export const OBSERVED_TAXONOMY_API_ENDPOINT = `${ARTSDATABANKEN_API_ENDPOINT}/DataTransfer/Export?scientificNameId=252&includeSynonyms=true&includeVernacularNames=true&exportType=Csv`;
 
@@ -17,7 +17,8 @@ export const INATURALIST_TAXA_API_ENDPOINT = "https://api.inaturalist.org/v1/tax
 // Wikipedia: description fallback
 export const WIKIPEDIA_PAGE_SUMMARY_API_ENDPOINT = "https://en.wikipedia.org/api/rest_v1/page/summary";
 
-// Xeno-canto: recordings and audio files
+// Xeno-canto: recording metadata for monthly preparation
 export const XENO_CANTO_RECORDINGS_API_ENDPOINT = "https://xeno-canto.org/api/3/recordings";
 
-export const XENO_CANTO_AUDIO_DOWNLOAD_ENDPOINT = "https://xeno-canto.org";
+// MapTiler: satellite globe imagery
+export const MAPTILER_SATELLITE_TILEJSON_ENDPOINT = "https://api.maptiler.com/maps/satellite-v4/tiles.json";

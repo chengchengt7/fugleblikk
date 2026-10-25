@@ -1,9 +1,13 @@
+.search-control {
+  position: relative;
+}
+
 .search-field {
   position: absolute;
-  width: 22rem;
-  bottom: 1rem;
-  left: 1rem;
-  z-index: 3;
+  top: 50%;
+  right: calc(100% + 0.5rem);
+  transform: translateY(-50%);
+  width: min(22rem, calc(100vw - 5.5rem));
   padding: 0.5rem;
   border-radius: 0.5rem;
   background: var(--color-primary);
@@ -21,9 +25,10 @@
 
   input {
     flex: 1;
+    min-width: 0;
     padding: 0.5rem 0.5rem 0.5rem 2rem;
     border-radius: 0.325rem;
-    background: var(--color-800) url("/icons/search.svg") no-repeat 0.5rem center / 1rem;
+    background: var(--color-800) url("/icons/search-grey.svg") no-repeat 0.5rem center / 1rem;
 
     &:focus {
       outline: 1px solid var(--color-primary-light);
@@ -50,4 +55,8 @@
       background-color: var(--color-primary-light);
     }
   }
+}
+
+.search-field[hidden] {
+  display: none;
 }

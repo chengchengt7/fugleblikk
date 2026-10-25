@@ -1,0 +1,9 @@
+.map-toolbar {
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  transform: translateY(-50%);
+  display: grid;
+  gap: 0.5rem;
+  z-index: 5;
+}

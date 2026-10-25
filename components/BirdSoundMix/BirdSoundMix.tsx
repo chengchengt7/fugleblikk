@@ -1,19 +1,20 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import "./BirdSoundMix.css";
 
 export default function BirdSoundMix({ recordings }: { recordings: string[] }) {
   const [playing, setPlaying] = useState(false);
   const players = useRef<HTMLAudioElement[]>([]);
 
   useEffect(() => {
+    setPlaying(false);
     return () => {
       for (const player of players.current) {
         player.pause();
         player.removeAttribute("src");
         player.load();
       }
+      players.current = [];
     };
   }, []);
 
@@ -53,15 +54,14 @@ export default function BirdSoundMix({ recordings }: { recordings: string[] }) {
   }
 
   return (
-    <div className="bird-sound-mix">
-      <button
-        type="button"
-        aria-pressed={playing}
-        aria-label={playing ? "Pause bird sounds" : "Play bird sounds"}
-        onClick={playing ? stop : start}
-      >
-        <img src={playing ? "/icons/pause.svg" : "/icons/play.svg"} alt="" />
-      </button>
-    </div>
+    <button
+      className="map-control"
+      type="button"
+      aria-pressed={playing}
+      aria-label={playing ? "Pause bird sounds" : "Play bird sounds"}
+      onClick={playing ? stop : start}
+    >
+      <img src={playing ? "/icons/pause.svg" : "/icons/play.svg"} alt="" />
+    </button>
   );
 }

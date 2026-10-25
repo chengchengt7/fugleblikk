@@ -2,12 +2,15 @@
 
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import type { MultiPolygon } from "geojson";
-import { Map as MapLibreMap, Marker, Popup, setWorkerUrl } from "maplibre-gl";
+import { LngLatBounds, Map as MapLibreMap, Marker, Popup, setWorkerUrl } from "maplibre-gl";
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import BirdCard from "@/components/BirdCard/BirdCard";
+import MapToolbar from "@/components/MapToolbar/MapToolbar";
+import type { MigrationSelection } from "@/components/MigrationControls/MigrationControls";
 import { MAPTILER_SATELLITE_TILEJSON_ENDPOINT } from "@/constants/api";
+import { migrationRoutes } from "@/data/migration-routes";
 import norwayLand from "@/data/norway-land.json";
 import type { BirdMapSlot } from "@/lib/bird-map";
 import type { BirdCardBird } from "@/types/bird";
@@ -17,12 +20,27 @@ const oslo: [number, number] = [10.75, 59.91];
 const osloZoom = 5.8;
 const maptilerKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
 
+function positionAt(positions: [number, number][], progress: number): [number, number] {
+  const month = Math.floor(progress) % 12;
+  const start = positions[month];
+  const end = positions[(month + 1) % 12];
+  const fraction = progress - Math.floor(progress);
+  return [
+    start[0] + (end[0] - start[0]) * fraction,
+    start[1] + (end[1] - start[1]) * fraction,
+  ];
+}
+
 export default function BirdMap({
   slots,
+  recordings,
   focusBird,
+  searchControl,
 }: {
   slots: BirdMapSlot[];
+  recordings: string[];
   focusBird: { id: number } | null;
+  searchControl: ReactNode;
 }) {
   const [mapSlots] = useState(() => slots);
   const mapContainer = useRef<HTMLDivElement>(null);
@@ -31,11 +49,23 @@ export default function BirdMap({
   const focusBirdRef = useRef(focusBird);
   const homeCenter = useRef<[number, number]>(oslo);
   const [unsupported, setUnsupported] = useState(false);
+  const [mapReady, setMapReady] = useState(false);
+  const [activeMigration, setActiveMigration] = useState<MigrationSelection>(null);
+  const migrationMarkers = useRef(new Map<number, Marker>());
+  const migrationProgress = useRef(0);
+  const migrationActive = useRef(false);
   const [selected, setSelected] = useState<{
     bird: BirdCardBird;
     container: HTMLDivElement;
     popup: Popup;
   } | null>(null);
+
+  const moveMigrationMarkers = useCallback((progress: number) => {
+    migrationProgress.current = progress;
+    for (const [index, marker] of migrationMarkers.current) {
+      marker.setLngLat(positionAt(migrationRoutes[index].positions, progress));
+    }
+  }, []);
 
   useEffect(() => {
     focusBirdRef.current = focusBird;
@@ -75,6 +105,7 @@ export default function BirdMap({
         if (
           !disposed &&
           focusBirdRef.current === null &&
+          !migrationActive.current &&
           booleanPointInPolygon(
             [coords.longitude, coords.latitude],
             norwayLand as MultiPolygon,
@@ -95,6 +126,7 @@ export default function BirdMap({
           .trim(),
         "atmosphere-blend": 0,
       });
+      setMapReady(true);
     });
 
     let openPopup: Popup | null = null;
@@ -180,6 +212,60 @@ export default function BirdMap({
   }, [mapSlots]);
 
   useEffect(() => {
+    if (activeMigration === null || !mapReady || !mapRef.current) return;
+    const map = mapRef.current;
+    const routes = migrationRoutes
+      .map((route, index) => ({ route, index }))
+      .filter(({ index }) => activeMigration === "all" || index === activeMigration);
+    const bounds = new LngLatBounds();
+    for (const { route } of routes) {
+      for (const position of route.positions) bounds.extend(position);
+    }
+    map.stop();
+    map.fitBounds(bounds, {
+      padding: 80,
+      maxZoom: 3.5,
+      duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1200,
+    });
+    for (const { route, index } of routes) {
+      const id = `migration-route-${index}`;
+      map.addSource(id, {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          properties: {},
+          geometry: { type: "LineString", coordinates: route.positions },
+        },
+      });
+      map.addLayer({
+        id,
+        type: "line",
+        source: id,
+        paint: { "line-color": route.color, "line-width": 3, "line-opacity": 0.9 },
+      });
+      const bird = document.createElement("div");
+      bird.className = "migration-bird";
+      bird.style.setProperty("--route-color", route.color);
+      bird.setAttribute("aria-hidden", "true");
+      const image = document.createElement("img");
+      image.src = mapSlots.find((slot) => slot.id === route.id)?.cutoutUrl ?? "";
+      image.alt = "";
+      bird.append(image);
+      migrationMarkers.current.set(index, new Marker({ element: bird, anchor: "center", opacityWhenCovered: 0 })
+        .setLngLat(positionAt(route.positions, migrationProgress.current))
+        .addTo(map));
+    }
+    return () => {
+      for (const { index } of routes) {
+        migrationMarkers.current.get(index)?.remove();
+        map.removeLayer(`migration-route-${index}`);
+        map.removeSource(`migration-route-${index}`);
+      }
+      migrationMarkers.current.clear();
+    };
+  }, [activeMigration, mapReady, mapSlots]);
+
+  useEffect(() => {
     if (focusBird === null) {
       mapRef.current?.stop();
       return;
@@ -187,6 +273,8 @@ export default function BirdMap({
     const target = birdMarkers.current.get(focusBird.id);
     const map = mapRef.current;
     if (!target || !map) return;
+    migrationActive.current = false;
+    setActiveMigration(null);
     map.stop();
     const showCard = () => target.button.click();
     map.once("moveend", showCard);
@@ -201,7 +289,7 @@ export default function BirdMap({
   }, [focusBird, mapSlots]);
 
   return (
-    <section className="bird-map" aria-label="Map of birds">
+    <section className={`bird-map${activeMigration !== null ? " migration-active" : ""}`} aria-label="Map of birds">
       <div className="globe" ref={mapContainer} />
       {selected &&
         createPortal(
@@ -227,34 +315,26 @@ export default function BirdMap({
         <a href="https://www.maptiler.com/copyright/">© MapTiler</a>
         <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>
       </div>
-      <div className="controls">
-        <button
-          type="button"
-          onClick={() => mapRef.current?.zoomIn()}
-          aria-label="Zoom in"
-        >
-          <img src="/icons/zoom-in.svg" alt="" />
-        </button>
-        <button
-          type="button"
-          onClick={() => mapRef.current?.zoomOut()}
-          aria-label="Zoom out"
-        >
-          <img src="/icons/zoom-out.svg" alt="" />
-        </button>
-        <button
-          type="button"
-          onClick={() =>
-            mapRef.current?.flyTo({
-              center: homeCenter.current,
-              zoom: osloZoom,
-            })
+      <MapToolbar
+        recordings={recordings}
+        migration={activeMigration}
+        onProgress={moveMigrationMarkers}
+        onMigrationSelect={(selection) => {
+          migrationActive.current = selection !== null;
+          setActiveMigration(selection);
+          if (selection === null) {
+            mapRef.current?.flyTo({ center: homeCenter.current, zoom: osloZoom });
+          } else {
+            selected?.popup.remove();
           }
-          aria-label="Return to your location or Oslo"
-        >
-          <img src="/icons/near-me.svg" alt="" />
-        </button>
-      </div>
+        }}
+        onLocate={() => {
+          migrationActive.current = false;
+          setActiveMigration(null);
+          mapRef.current?.flyTo({ center: homeCenter.current, zoom: osloZoom });
+        }}
+        searchControl={searchControl}
+      />
     </section>
   );
 }

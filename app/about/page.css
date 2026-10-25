@@ -1,0 +1,31 @@
+.about-page {
+  max-width: 46rem;
+  margin: 0 auto;
+  padding: clamp(2rem, 8vw, 5rem) 1.5rem;
+
+  h1 {
+    margin: 2.5rem 0 1.5rem;
+  }
+
+  p {
+    font-size: 1.125rem;
+    margin-top: 1rem;
+    line-height: 1.5;
+  }
+
+  .highlight {
+    color: var(--color-primary-light);
+    font-style: italic;
+  }
+
+  a {
+    color: var(--color-primary-light);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+
+    &:focus-visible {
+      outline: 2px solid var(--color-primary-light);
+      outline-offset: 3px;
+    }
+  }
+}

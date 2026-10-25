@@ -4,6 +4,8 @@ export const ARTSDATABANKEN_SPECIES_PAGE_ENDPOINT = "https://artsdatabanken.no/a
 
 export const OBSERVED_TAXONOMY_API_ENDPOINT = `${ARTSDATABANKEN_API_ENDPOINT}/DataTransfer/Export?scientificNameId=252&includeSynonyms=true&includeVernacularNames=true&exportType=Csv`;
 
+export const ARTSDATABANKEN_NAME_SEARCH_API_ENDPOINT = "https://lookup.artsdatabanken.no/v1/query";
+
 // Artskart: observation counts and records
 export const BIRD_OBSERVATION_SUMMARY_API_ENDPOINT = "https://artskart.artsdatabanken.no/appapi/api/data/GetObservationTaxonCount/";
 

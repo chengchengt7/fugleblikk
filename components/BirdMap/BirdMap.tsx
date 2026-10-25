@@ -17,9 +17,18 @@ const oslo: [number, number] = [10.75, 59.91];
 const osloZoom = 5.8;
 const maptilerKey = process.env.NEXT_PUBLIC_MAPTILER_API_KEY;
 
-export default function BirdMap({ slots }: { slots: BirdMapSlot[] }) {
+export default function BirdMap({
+  slots,
+  focusBird,
+}: {
+  slots: BirdMapSlot[];
+  focusBird: { id: number } | null;
+}) {
+  const [mapSlots] = useState(() => slots);
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
+  const birdMarkers = useRef(new Map<number, { button: HTMLButtonElement; coordinates: [number, number] }>());
+  const focusBirdRef = useRef(focusBird);
   const homeCenter = useRef<[number, number]>(oslo);
   const [unsupported, setUnsupported] = useState(false);
   const [selected, setSelected] = useState<{
@@ -27,6 +36,10 @@ export default function BirdMap({ slots }: { slots: BirdMapSlot[] }) {
     container: HTMLDivElement;
     popup: Popup;
   } | null>(null);
+
+  useEffect(() => {
+    focusBirdRef.current = focusBird;
+  }, [focusBird]);
 
   useEffect(() => {
     if (!maptilerKey || !mapContainer.current) return;
@@ -61,6 +74,7 @@ export default function BirdMap({ slots }: { slots: BirdMapSlot[] }) {
       ({ coords }) => {
         if (
           !disposed &&
+          focusBirdRef.current === null &&
           booleanPointInPolygon(
             [coords.longitude, coords.latitude],
             norwayLand as MultiPolygon,
@@ -89,7 +103,7 @@ export default function BirdMap({ slots }: { slots: BirdMapSlot[] }) {
         .setLngLat(coordinates)
         .addTo(map);
 
-    const markers = slots.map((slot) => {
+    const markers = mapSlots.map((slot) => {
       const coordinates: [number, number] = [slot.longitude, slot.latitude];
       const shadow = document.createElement("div");
       shadow.className = "bird-shadow";
@@ -133,6 +147,7 @@ export default function BirdMap({ slots }: { slots: BirdMapSlot[] }) {
         setSelected({ bird: slot.bird, container, popup });
       });
       const marker = addMarker(button, coordinates);
+      birdMarkers.current.set(slot.id, { button, coordinates });
       return { marker, shadowMarker, button, shadow, side: slot.side };
     });
 
@@ -160,8 +175,30 @@ export default function BirdMap({ slots }: { slots: BirdMapSlot[] }) {
       }
       map.remove();
       mapRef.current = null;
+      birdMarkers.current.clear();
     };
-  }, [slots]);
+  }, [mapSlots]);
+
+  useEffect(() => {
+    if (focusBird === null) {
+      mapRef.current?.stop();
+      return;
+    }
+    const target = birdMarkers.current.get(focusBird.id);
+    const map = mapRef.current;
+    if (!target || !map) return;
+    map.stop();
+    const showCard = () => target.button.click();
+    map.once("moveend", showCard);
+    map.flyTo({
+      center: target.coordinates,
+      zoom: Math.max(map.getZoom(), 7),
+      duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1200,
+    });
+    return () => {
+      map.off("moveend", showCard);
+    };
+  }, [focusBird, mapSlots]);
 
   return (
     <section className="bird-map" aria-label="Map of birds">

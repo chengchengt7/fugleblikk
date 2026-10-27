@@ -8,6 +8,7 @@ import "./MapToolbar.css";
 export default function MapToolbar({
   recordings,
   migration,
+  panelContainer,
   onProgress,
   onMigrationSelect,
   onLocate,
@@ -17,6 +18,7 @@ export default function MapToolbar({
 }: {
   recordings: string[];
   migration: MigrationSelection;
+  panelContainer: HTMLDivElement | null;
   onProgress: (progress: number) => void;
   onMigrationSelect: (selection: MigrationSelection) => void;
   onLocate: () => void;
@@ -29,6 +31,7 @@ export default function MapToolbar({
       <BirdSoundMix recordings={recordings} />
       <MigrationControls
         active={migration}
+        panelContainer={panelContainer}
         onProgress={onProgress}
         onSelect={onMigrationSelect}
       />

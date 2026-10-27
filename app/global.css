@@ -24,7 +24,7 @@
 }
 
 body {
-  background-color: var(--color-primary);
+  background-color: var(--color-900);
   color: var(--color-100);
 }
 
@@ -78,4 +78,18 @@ a {
     width: 18px;
     height: 18px;
   }
+}
+
+.loading {
+  padding: 2.25rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-300)
+}
+
+.intro {
+  position: absolute;
+  top: 2.5rem;
+  left: 1rem;
+  z-index: 3;
+  font-size: 0.875rem;
 }

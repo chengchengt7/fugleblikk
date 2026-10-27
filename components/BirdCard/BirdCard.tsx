@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { birdSlug } from "@/lib/bird-slug";
 import type { BirdCardBird } from "@/types/bird";
 import "./BirdCard.css";
 
@@ -13,6 +14,8 @@ export default function BirdCard({
     bird.norwegianName[0].toLocaleUpperCase("nb-NO") +
     bird.norwegianName.slice(1);
 
+  const birdUrl = `/birds/${encodeURIComponent(birdSlug(bird.norwegianName))}`;
+
   return (
     <article className="bird-card">
       <button
@@ -23,7 +26,7 @@ export default function BirdCard({
       >
         <img src="/icons/close.svg" alt="" />
       </button>
-      <Link href={`/birds/${bird.id}`} aria-label={`Explore ${norwegianName}`}>
+      <Link href={birdUrl} aria-label={`Explore ${norwegianName}`}>
         {bird.media?.cardPhoto ? (
           <img
             src={bird.media.cardPhoto.url}
@@ -35,7 +38,7 @@ export default function BirdCard({
         )}
       </Link>
       <div className="card-content">
-        <h3><Link href={`/birds/${bird.id}`}>{norwegianName}</Link></h3>
+        <h3><Link href={birdUrl}>{norwegianName}</Link></h3>
         {bird.habitats.length > 0 && (
           <p className="habitats">
             <strong>Levested:</strong> {bird.habitats.join(", ")}

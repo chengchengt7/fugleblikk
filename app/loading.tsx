@@ -1,7 +1,7 @@
 export default function Loading() {
   return (
-    <main className="bird-page">
-      <p aria-live="polite">Laster fuglelisten…</p>
-    </main>
+    <div className="loading">
+      <p aria-live="polite">Bird is loading..</p>
+    </div>
   );
 }

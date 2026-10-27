@@ -50,6 +50,7 @@ export default function SearchField({
     if (currentRequest !== requestId.current) return;
     setResult(nextResult);
     setPending(false);
+    if (nextResult.status === "found") setOpen(false);
     onFocusBird(nextResult.status === "found" ? nextResult.birdId : null);
   }
 

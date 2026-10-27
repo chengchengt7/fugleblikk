@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { migrationRoutes } from "@/data/migration-routes";
 import "./MigrationControls.css";
 
@@ -10,10 +11,12 @@ const months = ["January", "February", "March", "April", "May", "June", "July", 
 
 export default function MigrationControls({
   active,
+  panelContainer,
   onSelect,
   onProgress,
 }: {
   active: MigrationSelection;
+  panelContainer: HTMLDivElement | null;
   onSelect: (selection: MigrationSelection) => void;
   onProgress: (progress: number) => void;
 }) {
@@ -62,7 +65,7 @@ export default function MigrationControls({
           </g>
         </svg>
       </button>
-      {active !== null && (
+      {active !== null && panelContainer && createPortal(
         <div className="migration-panel">
           <div className="migration-birds" aria-label="Choose migrating birds">
             <button type="button" aria-pressed={active === "all"} onClick={() => choose("all")}>All birds</button>
@@ -95,7 +98,8 @@ export default function MigrationControls({
               }}
             />
           </div>
-        </div>
+        </div>,
+        panelContainer,
       )}
     </>
   );

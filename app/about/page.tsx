@@ -18,7 +18,7 @@ function formatDate(date: string) {
 
 export default function AboutPage() {
   return (
-    <main className="about-page">
+    <div className="about-page">
       <Link href="/">← Back to the globe</Link>
       <h1>About Fugleblikk</h1>
       <p>
@@ -37,6 +37,6 @@ export default function AboutPage() {
         sounds from <a href="https://xeno-canto.org/">Xeno-canto</a>. Migration
         routes are illustrative. Built by Chengcheng.
       </p>
-    </main>
+    </div>
   );
 }

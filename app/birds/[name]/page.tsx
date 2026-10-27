@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import BirdGallery from "@/components/BirdGallery/BirdGallery";
+import { birdSlug } from "@/lib/bird-slug";
 import saved from "@/data/observed-birds.json";
 import type { ObservationSnapshot } from "@/types/bird";
 import "./page.css";
@@ -10,14 +11,19 @@ const snapshot: ObservationSnapshot = saved;
 export default async function BirdPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: Promise<{ name: string }>;
 }) {
-  const { id } = await params;
-  const bird = snapshot.birds.find((item) => String(item.id) === id);
+  const { name } = await params;
+  const bird = snapshot.birds.find(
+    (item) => birdSlug(item.norwegianName) === birdSlug(name) || String(item.id) === name,
+  );
   if (!bird) notFound();
 
+  const slug = birdSlug(bird.norwegianName);
+  if (name !== slug) permanentRedirect(`/birds/${encodeURIComponent(slug)}`);
+
   return (
-    <main className="bird-detail-page">
+    <div className="bird-detail-page">
       <Link href="/">← All birds</Link>
       <BirdGallery
         photos={bird.media?.detailPhotos ?? []}
@@ -74,6 +80,6 @@ export default async function BirdPage({
           )}
         </section>
       </div>
-    </main>
+    </div>
   );
 }

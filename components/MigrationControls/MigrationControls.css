@@ -2,7 +2,7 @@
   .migration-panel {
     position: absolute;
     top: 50%;
-    right: calc(100% + 0.5rem);
+    right: 4rem;
     transform: translateY(-50%);
     width: min(16rem, calc(100vw - 5rem));
     z-index: 4;
@@ -13,11 +13,13 @@
     border-radius: 0.5rem;
     background: var(--color-primary);
 
-    @media (max-width: 40rem) {
-      position: fixed;
-      right: 1rem;
-      bottom: 1rem;
+    @media (max-width: 70rem) {
+      position: static;
+      top: auto;
       transform: none;
+      width: auto;
+      height: auto;
+      margin: 0 1rem 1rem;
     }
 
     button {

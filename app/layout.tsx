@@ -13,7 +13,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="nb">
       <body>
         <Header />
-        {children}
+        <main>{children}</main>
         <Footer />
       </body>
     </html>

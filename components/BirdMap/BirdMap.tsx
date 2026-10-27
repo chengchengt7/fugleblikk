@@ -45,6 +45,7 @@ export default function BirdMap({
   const [focusBird, setFocusBird] = useState<{ id: number } | null>(
     initialResult?.status === "found" ? { id: initialResult.birdId } : null,
   );
+  const [migrationPanel, setMigrationPanel] = useState<HTMLDivElement | null>(null);
   const [mapSlots] = useState(() => slots);
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -217,6 +218,7 @@ export default function BirdMap({
   useEffect(() => {
     if (activeMigration === null || !mapReady || !mapRef.current) return;
     const map = mapRef.current;
+    map.resize();
     const routes = migrationRoutes
       .map((route, index) => ({ route, index }))
       .filter(({ index }) => activeMigration === "all" || index === activeMigration);
@@ -224,12 +226,13 @@ export default function BirdMap({
     for (const { route } of routes) {
       for (const position of route.positions) bounds.extend(position);
     }
-    map.stop();
-    map.fitBounds(bounds, {
-      padding: 80,
-      maxZoom: 3.5,
-      duration: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1200,
-    });
+    const fitRoutes = (duration: number) => {
+      map.stop();
+      map.fitBounds(bounds, { padding: 80, maxZoom: 3.5, duration });
+    };
+    fitRoutes(window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1200);
+    const onResize = () => fitRoutes(0);
+    map.on("resize", onResize);
     for (const { route, index } of routes) {
       const id = `migration-route-${index}`;
       map.addSource(id, {
@@ -259,10 +262,13 @@ export default function BirdMap({
         .addTo(map));
     }
     return () => {
+      map.off("resize", onResize);
       for (const { index } of routes) {
         migrationMarkers.current.get(index)?.remove();
-        map.removeLayer(`migration-route-${index}`);
-        map.removeSource(`migration-route-${index}`);
+        if (mapRef.current === map) {
+          map.removeLayer(`migration-route-${index}`);
+          map.removeSource(`migration-route-${index}`);
+        }
       }
       migrationMarkers.current.clear();
     };
@@ -294,6 +300,11 @@ export default function BirdMap({
   return (
     <section className={`bird-map${activeMigration !== null ? " migration-active" : ""}`} aria-label="Map of birds">
       <div className="globe" ref={mapContainer} />
+      {unsupported && (
+        <p className="map-message" role="status">
+          Your browser cannot display the globe. Try another browser.
+        </p>
+      )}
       {selected &&
         createPortal(
           <BirdCard
@@ -305,6 +316,7 @@ export default function BirdMap({
       <MapToolbar
         recordings={recordings}
         migration={activeMigration}
+        panelContainer={migrationPanel}
         onProgress={moveMigrationMarkers}
         onMigrationSelect={(selection) => {
           migrationActive.current = selection !== null;
@@ -324,6 +336,7 @@ export default function BirdMap({
         initialResult={initialResult}
         onFocusBird={(id) => setFocusBird(id === null ? null : { id })}
       />
+      <div className="migration-panel-slot" ref={setMigrationPanel} />
     </section>
   );
 }

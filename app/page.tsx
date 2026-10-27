@@ -16,7 +16,8 @@ export default async function Home({
   const query = typeof q === "string" ? q : "";
   const results = query.trim() ? await searchBirds(query.trim(), snapshot.birds) : null;
   return (
-    <main>
+    <>
+      <p className="intro">Explore Norway's birds. Select a bird or search by name.</p>
       <BirdMap
         key={snapshot.preparedAt}
         slots={mapSlots}
@@ -26,6 +27,6 @@ export default async function Home({
         initialQuery={query}
         initialResult={results}
       />
-    </main>
+    </>
   );
 }

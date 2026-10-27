@@ -1,59 +1,70 @@
 # Fugleblikk
 
-A Next.js site exploring birds reported in Norway, Svalbard/Bjørnøya, Jan Mayen
-and Norwegian waters. The prepared bird data includes iNaturalist photos and
-English names, transparent card-photo cutouts, Xeno-canto audio, and detail
-pages with larger photos and sourced descriptions. The homepage displays bird
-cutouts in a land-based mosaic on a rotatable globe; bird cards remain available
-as a component.
+Explore birds observed in Norway, Svalbard, Jan Mayen and Norwegian waters. Built by Chengcheng with Next.js, TypeScript and MapLibre for curious birdwatchers and nature enthusiasts.
+
+**Live site:** [fugleblikk.vercel.app](https://fugleblikk.vercel.app/)
+
+Select a bird on the globe to see its card, hear its call and open its detail page. Search by Norwegian or English name, or follow five illustrative migration routes.
+
+## Assignment requirements
+
+- **Pages:** homepage and bird overview combined, dynamic detail pages at `/birds/[name]`, and an About page.
+- **Navigation:** Next.js `Link`, direct detail-page URLs, and shared header, main and footer in `layout.tsx`.
+- **Data:** external APIs, typed data and props, reusable UI components, and a prepared bird collection.
+- **Search:** live name lookup, automatic map navigation, and messages for no match, birds outside the collection, or API errors.
+- **Usability:** responsive layouts, labelled controls, image alternative text, and fallbacks for missing content or unknown birds.
+
+## Run locally
+
+Use **Node.js 24**. Create `.env.local`:
+
+```env
+NEXT_PUBLIC_MAPTILER_API_KEY=your_maptiler_key
+```
 
 ```sh
 npm install
-npm run prepare:observations
 npm run dev
 ```
 
-Preparation code lives in `data-preparation/`; saved datasets live in `data/`.
-Set `XENO_CANTO_API_KEY` in `.env.local` to prepare media. For automatic bird
-cutouts, use Python 3.9–3.12 and run
-`python3 -m pip install rembg==2.0.60 'onnxruntime>=1.19,<2'`.
-After an observation snapshot already exists,
-`npm run prepare:media` updates its bird content without downloading observations
-again. The monthly workflow installs these dependencies and needs the Xeno-canto
-key as a GitHub Actions secret.
+Open [localhost:3000](http://localhost:3000). The prepared data is included, so no data refresh is needed to run the site.
 
-Use Node 24. The prepared JSON is committed with the site so visitors do not
-wait for API preparation. `npm run build` verifies the site.
+```sh
+npm run build  # Production build
+npm start      # Serve the production build
+```
 
-The [GitHub workflow](.github/workflows/refresh-observations.yml) refreshes the
-snapshot on the first of each month at 04:17 Europe/Oslo after it is published
-on the default branch.
+Set the MapTiler key in Vercel's environment settings too. Keep `.env.local` and secret keys out of Git.
 
-## Data
+## APIs and sources
 
-`data/observed-birds.json` stores one entry per accepted species, using its latest
-usable public observation from the previous 12 complete Oslo calendar months.
-All public Artskart providers and precision bands are considered; invalid or
-out-of-scope records are excluded. Ties use the smallest observation ID.
-Refreshes reuse existing media and cutouts, and failures leave the previous
-snapshot intact.
-Names and taxonomy come from [Artsnavn](https://nortaxa.artsdatabanken.no/);
-observations come from [Artskart](https://artskart.artsdatabanken.no/publicapi/).
+| Source | Used for |
+| --- | --- |
+| [Artsnavn](https://nortaxa.artsdatabanken.no/api/v1) | Accepted taxonomy and Norwegian names |
+| [Artsdatabanken lookup](https://lookup.artsdatabanken.no/v1/query) | Live Norwegian-name search |
+| [Artskart](https://artskart.artsdatabanken.no/publicapi/) | Observation counts and records |
+| [iNaturalist](https://api.inaturalist.org/v1/docs/) | English-name search, photos, names and descriptions |
+| [Wikipedia](https://en.wikipedia.org/api/rest_v1/) | Description fallback |
+| [Xeno-canto](https://xeno-canto.org/api/3/recordings) | Bird recordings |
+| [MapTiler](https://www.maptiler.com/copyright/) | Satellite map imagery |
 
-`data/norwegian-scope.geojson` is a filtered subset of Flanders Marine Institute
-(2024), [Union of the ESRI Country shapefile and the Exclusive Economic Zones,
-version 4](https://doi.org/10.14284/698), from [Marine Regions](https://www.marineregions.org/)
-([CC BY 4.0](https://creativecommons.org/licenses/by/4.0/)). It selects Norway,
-Svalbard/Bjørnøya and Jan Mayen land, maritime zones and shared regimes;
-the original geometries are unchanged.
+Habitat information comes from Artsdatabanken species pages. Geographic shapes come from [Natural Earth](https://www.naturalearthdata.com/) and [Marine Regions](https://doi.org/10.14284/698) (Flanders Marine Institute, 2024; CC BY 4.0; filtered, otherwise unchanged). Map data: [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright).
 
-The globe renders MapTiler satellite tiles with MapLibre. Add your own
-`NEXT_PUBLIC_MAPTILER_API_KEY` to `.env.local` before building or running the
-site. The bird mosaic uses Natural Earth [1:50m country geometry](https://www.naturalearthdata.com/downloads/50m-cultural-vectors/50m-admin-0-countries-2/).
+## Monthly data refresh
 
-## Map attribution
+The [GitHub Actions workflow](.github/workflows/refresh-observations.yml) is scheduled for **04:17 Europe/Oslo on the first of each month**. It prepares the previous 12 complete calendar months, updates `data/observed-birds.json` and bird cutouts, builds the site, and commits successful changes. It can also be started manually.
 
-Globe imagery: [© MapTiler](https://www.maptiler.com/copyright/).
-Map data: [© OpenStreetMap contributors](https://www.openstreetmap.org/copyright).
-MapTiler's Free plan also requires the linked MapTiler logo and these credits to
-remain visible on the map.
+The workflow needs the repository secret `XENO_CANTO_API_KEY`. For local preparation, add that key to `.env.local`, install Python 3.9–3.12 and the cutout dependencies:
+
+```sh
+python3 -m pip install rembg==2.0.60 'onnxruntime>=1.19,<2'
+npm run prepare:observations
+```
+
+Use `npm run prepare:media` to update media without downloading observations again. Existing media is reused where possible. Search calls live APIs; the displayed collection uses the saved monthly data.
+
+## Limitations
+
+- Search requires an exact Norwegian or English name, ignoring capitalisation, and only opens birds in the saved collection.
+- Map positions are arranged near recorded locations; migration routes are illustrative, not live tracking.
+- Some photos, recordings or descriptions may be unavailable. Map imagery, search and remote media need internet access; the globe requires WebGL2.

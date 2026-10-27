@@ -23,7 +23,7 @@ export default function BirdCard({
       >
         <img src="/icons/close.svg" alt="" />
       </button>
-      <Link href={`/birds/${bird.id}`}>
+      <Link href={`/birds/${bird.id}`} aria-label={`Explore ${norwegianName}`}>
         {bird.media?.cardPhoto ? (
           <img
             src={bird.media.cardPhoto.url}
@@ -33,32 +33,32 @@ export default function BirdCard({
         ) : (
           <div className="photo-empty">No photo</div>
         )}
-        <div className="card-content">
-          <h3>{norwegianName}</h3>
-          {bird.habitats.length > 0 && (
-            <p className="habitats">
-              <strong>Levested:</strong> {bird.habitats.join(", ")}
-            </p>
-          )}
-          {bird.media?.englishName && (
-            <p className="english-name">
-              <i>{bird.media.englishName}</i>
-            </p>
-          )}
-          <p className="scientific-name">{bird.scientificName}</p>
-          {bird.media?.sound ? (
-            <audio
-              controls
-              controlsList="nodownload noplaybackrate novolume"
-              preload="none"
-              src={bird.media.sound.fileUrl}
-              aria-label={`${bird.norwegianName}'s recording`}
-            />
-          ) : (
-            <p className="sound-unavailable">No recording available</p>
-          )}
-        </div>
       </Link>
+      <div className="card-content">
+        <h3><Link href={`/birds/${bird.id}`}>{norwegianName}</Link></h3>
+        {bird.habitats.length > 0 && (
+          <p className="habitats">
+            <strong>Levested:</strong> {bird.habitats.join(", ")}
+          </p>
+        )}
+        {bird.media?.englishName && (
+          <p className="english-name">
+            <i>{bird.media.englishName}</i>
+          </p>
+        )}
+        <p className="scientific-name">{bird.scientificName}</p>
+        {bird.media?.sound ? (
+          <audio
+            controls
+            controlsList="nodownload noplaybackrate novolume"
+            preload="none"
+            src={bird.media.sound.fileUrl}
+            aria-label={`${bird.norwegianName}'s recording`}
+          />
+        ) : (
+          <p className="sound-unavailable">No recording available</p>
+        )}
+      </div>
     </article>
   );
 }

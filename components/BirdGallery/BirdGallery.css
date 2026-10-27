@@ -1,0 +1,60 @@
+.bird-detail-gallery {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1rem;
+  margin-block: 2rem;
+
+  button {
+    background: none;
+    cursor: zoom-in;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: 0.25rem;
+  }
+
+  @media (max-width: 40rem) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.bird-photo-modal {
+  width: 100%;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  border: 0;
+  padding: 4rem 1rem 1rem;
+  background: transparent;
+
+  &[open] {
+    display: grid;
+    place-items: center;
+  }
+
+  &::backdrop {
+    background: rgb(0 0 0 / 70%);
+  }
+
+  .map-control {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+  }
+
+  .full-photo {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: calc(100dvh - 5rem);
+    object-fit: contain;
+  }
+}
+
+body:has(.bird-photo-modal[open]) {
+  overflow: hidden;
+}

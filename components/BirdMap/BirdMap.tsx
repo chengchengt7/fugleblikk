@@ -3,8 +3,7 @@
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 import type { MultiPolygon } from "geojson";
 import { LngLatBounds, Map as MapLibreMap, Marker, Popup, setWorkerUrl } from "maplibre-gl";
-import Image from "next/image";
-import { type ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import BirdCard from "@/components/BirdCard/BirdCard";
 import MapToolbar from "@/components/MapToolbar/MapToolbar";
@@ -13,6 +12,7 @@ import { MAPTILER_SATELLITE_TILEJSON_ENDPOINT } from "@/constants/api";
 import { migrationRoutes } from "@/data/migration-routes";
 import norwayLand from "@/data/norway-land.json";
 import type { BirdMapSlot } from "@/lib/bird-map";
+import type { BirdSearchResult } from "@/lib/search-birds";
 import type { BirdCardBird } from "@/types/bird";
 import "./BirdMap.css";
 
@@ -34,14 +34,17 @@ function positionAt(positions: [number, number][], progress: number): [number, n
 export default function BirdMap({
   slots,
   recordings,
-  focusBird,
-  searchControl,
+  initialQuery,
+  initialResult,
 }: {
   slots: BirdMapSlot[];
   recordings: string[];
-  focusBird: { id: number } | null;
-  searchControl: ReactNode;
+  initialQuery: string;
+  initialResult: BirdSearchResult | null;
 }) {
+  const [focusBird, setFocusBird] = useState<{ id: number } | null>(
+    initialResult?.status === "found" ? { id: initialResult.birdId } : null,
+  );
   const [mapSlots] = useState(() => slots);
   const mapContainer = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
@@ -299,22 +302,6 @@ export default function BirdMap({
           />,
           selected.container,
         )}
-      <div className="attribution">
-        <a
-          className="bird-map-logo"
-          href="https://www.maptiler.com"
-          aria-label="Map imagery by MapTiler"
-        >
-          <Image
-            src="/maptiler-logo.svg"
-            alt="MapTiler"
-            width={55}
-            height={16}
-          />
-        </a>
-        <a href="https://www.maptiler.com/copyright/">© MapTiler</a>
-        <a href="https://www.openstreetmap.org/copyright">© OpenStreetMap contributors</a>
-      </div>
       <MapToolbar
         recordings={recordings}
         migration={activeMigration}
@@ -333,7 +320,9 @@ export default function BirdMap({
           setActiveMigration(null);
           mapRef.current?.flyTo({ center: homeCenter.current, zoom: osloZoom });
         }}
-        searchControl={searchControl}
+        initialQuery={initialQuery}
+        initialResult={initialResult}
+        onFocusBird={(id) => setFocusBird(id === null ? null : { id })}
       />
     </section>
   );

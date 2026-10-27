@@ -109,18 +109,6 @@
     filter: brightness(0) blur(3px) drop-shadow(0 0 5px var(--color-900));
     opacity: 60%  
   }
-
-  .attribution {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.25rem;
-  background: var(--color-900);
-  font-size: 11px;
-  }
 }
 
 @keyframes bird-hop {

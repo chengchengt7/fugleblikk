@@ -1,7 +1,8 @@
-import type { ReactNode } from "react";
 import Link from "next/link";
 import BirdSoundMix from "@/components/BirdSoundMix/BirdSoundMix";
 import MigrationControls, { type MigrationSelection } from "@/components/MigrationControls/MigrationControls";
+import SearchField from "@/components/SearchField/SearchField";
+import type { BirdSearchResult } from "@/lib/search-birds";
 import "./MapToolbar.css";
 
 export default function MapToolbar({
@@ -10,14 +11,18 @@ export default function MapToolbar({
   onProgress,
   onMigrationSelect,
   onLocate,
-  searchControl,
+  initialQuery,
+  initialResult,
+  onFocusBird,
 }: {
   recordings: string[];
   migration: MigrationSelection;
   onProgress: (progress: number) => void;
   onMigrationSelect: (selection: MigrationSelection) => void;
   onLocate: () => void;
-  searchControl: ReactNode;
+  initialQuery: string;
+  initialResult: BirdSearchResult | null;
+  onFocusBird: (id: number | null) => void;
 }) {
   return (
     <div className="map-toolbar" role="group" aria-label="Map controls">
@@ -27,7 +32,11 @@ export default function MapToolbar({
         onProgress={onProgress}
         onSelect={onMigrationSelect}
       />
-      {searchControl}
+      <SearchField
+        initialQuery={initialQuery}
+        initialResult={initialResult}
+        onFocusBird={onFocusBird}
+      />
       <button
         className="map-control"
         type="button"

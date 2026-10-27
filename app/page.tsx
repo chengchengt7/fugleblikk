@@ -1,4 +1,4 @@
-import SearchField from "@/components/SearchField/SearchField";
+import BirdMap from "@/components/BirdMap/BirdMap";
 import saved from "@/data/observed-birds.json";
 import { prepareBirdMap } from "@/lib/bird-map";
 import { searchBirds } from "@/lib/search-birds";
@@ -17,7 +17,7 @@ export default async function Home({
   const results = query.trim() ? await searchBirds(query.trim(), snapshot.birds) : null;
   return (
     <main>
-      <SearchField
+      <BirdMap
         key={snapshot.preparedAt}
         slots={mapSlots}
         recordings={snapshot.birds.flatMap((bird) =>

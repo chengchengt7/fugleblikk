@@ -1,0 +1,11 @@
+.attribution {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  color: var(--color-300);
+  font-size: 9px;
+
+  a:hover {
+    color: var(--color-100);
+  }
+}

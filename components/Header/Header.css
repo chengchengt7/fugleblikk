@@ -1,0 +1,22 @@
+.site-header {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 3;
+
+  a {
+    display: flex;
+    align-items: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.12rem;    
+  }
+
+  svg {
+    width: 1.15em;
+    height: 1.35em;
+    margin-right: 0.1rem;
+    flex-shrink: 0;
+    color: var(--color-primary-light);
+  }
+}

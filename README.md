@@ -47,3 +47,4 @@ The [GitHub Actions workflow](.github/workflows/refresh-observations.yml) is sch
 - Search requires an exact Norwegian or English name (live API search rather than search within collections). Only birds in the saved collection will appear in the results.
 - Birds are arranged in a grid near recorded locations. Because observations are unevenly distributed, the layout calculation places some birds farther from their recorded locations than others. Migration routes are illustrative, not live tracking.
 - Some photos, recordings or descriptions may be unavailable. Map imagery, search and remote media need internet access; the globe requires WebGL2.
+- Bird recordings may be temporarily unavailable during Xeno-canto site maintenance.

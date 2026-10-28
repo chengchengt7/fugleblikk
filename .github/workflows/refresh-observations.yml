@@ -1,7 +1,7 @@
 name: Refresh bird observations
 on:
   schedule:
-    - cron: "17 4 1 * *"
+    - cron: "0 0 1 * *"
       timezone: "Europe/Oslo"
   workflow_dispatch:
 permissions:
@@ -31,6 +31,7 @@ jobs:
           XENO_CANTO_API_KEY: ${{ secrets.XENO_CANTO_API_KEY }}
       - run: npm run build
       - name: Save the completed snapshot
+        id: snapshot
         run: |
           git add data/observed-birds.json public/bird-cutouts/
           if ! git diff --cached --quiet; then
@@ -38,4 +39,13 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git commit -m "Refresh monthly bird observations"
             git push
+            echo "changed=true" >> "$GITHUB_OUTPUT"
           fi
+      - name: Request Vercel deployment
+        if: steps.snapshot.outputs.changed == 'true'
+        env:
+          VERCEL_DEPLOY_HOOK: ${{ secrets.VERCEL_DEPLOY_HOOK }}
+        run: |
+          : "${VERCEL_DEPLOY_HOOK:?Add VERCEL_DEPLOY_HOOK to repository Actions secrets}"
+          curl --fail --silent --show-error --max-time 30 \
+            --request POST --output /dev/null "$VERCEL_DEPLOY_HOOK"

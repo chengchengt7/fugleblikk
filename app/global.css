@@ -24,7 +24,7 @@
 }
 
 body {
-  background-color: var(--color-900);
+  background-color: var(--color-primary);
   color: var(--color-100);
 }
 

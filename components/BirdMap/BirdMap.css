@@ -26,7 +26,6 @@
         flex: 1;
         height: auto;
         min-height: 0;
-        max-height: 100vw;
       }
 
       .migration-panel-slot {

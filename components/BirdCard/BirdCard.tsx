@@ -26,7 +26,7 @@ export default function BirdCard({
       >
         <img src="/icons/close.svg" alt="" />
       </button>
-      <Link href={birdUrl} aria-label={`Explore ${norwegianName}`}>
+      <Link href={birdUrl} lang="nb" aria-label={`Utforsk ${norwegianName}`}>
         {bird.media?.cardPhoto ? (
           <img
             src={bird.media.cardPhoto.url}
@@ -34,13 +34,13 @@ export default function BirdCard({
             loading="lazy"
           />
         ) : (
-          <div className="photo-empty">No photo</div>
+          <div className="photo-empty" lang="en">No photo</div>
         )}
       </Link>
       <div className="card-content">
-        <h3><Link href={birdUrl}>{norwegianName}</Link></h3>
+        <h3 lang="nb"><Link href={birdUrl}>{norwegianName}</Link></h3>
         {bird.habitats.length > 0 && (
-          <p className="habitats">
+          <p className="habitats" lang="nb">
             <strong>Levested:</strong> {bird.habitats.join(", ")}
           </p>
         )}
@@ -56,7 +56,8 @@ export default function BirdCard({
             controlsList="nodownload noplaybackrate novolume"
             preload="none"
             src={bird.media.sound.fileUrl}
-            aria-label={`${bird.norwegianName}'s recording`}
+            lang="nb"
+            aria-label={`Lydopptak av ${bird.norwegianName}`}
           />
         ) : (
           <p className="sound-unavailable">No recording available</p>

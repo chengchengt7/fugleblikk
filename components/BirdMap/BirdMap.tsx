@@ -154,7 +154,8 @@ export default function BirdMap({
       const button = document.createElement("button");
       button.type = "button";
       button.className = "bird";
-      button.setAttribute("aria-label", `Show ${slot.name}`);
+      button.lang = slot.bird.norwegianName ? "nb" : "en";
+      button.setAttribute("aria-label", `${slot.bird.norwegianName ? "Vis" : "Show"} ${slot.name}`);
       button.dataset.name = slot.name;
       const photo = document.createElement("img");
       photo.src = slot.cutoutUrl;
@@ -228,7 +229,11 @@ export default function BirdMap({
     }
     const fitRoutes = (duration: number) => {
       map.stop();
-      map.fitBounds(bounds, { padding: 80, maxZoom: 3.5, duration });
+      map.fitBounds(bounds, {
+        padding: { top: 60, bottom: 60, left: 40, right: 40 },
+        maxZoom: 3.5,
+        duration,
+      });
     };
     fitRoutes(window.matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : 1200);
     const onResize = () => fitRoutes(0);

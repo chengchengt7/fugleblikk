@@ -21,7 +21,8 @@ export default function BirdGallery({ photos, name }: {
           <button
             key={photo.url}
             type="button"
-            aria-label={`Enlarge photo ${index + 1} of ${name}`}
+            lang="nb"
+            aria-label={`Forstørr bilde ${index + 1} av ${name}`}
             onClick={() => setSelected(photo.url)}
           >
             <img src={photo.url} alt={name} loading="lazy" />
@@ -32,7 +33,7 @@ export default function BirdGallery({ photos, name }: {
       <dialog
         ref={dialog}
         className="bird-photo-modal"
-        aria-label={`Photo of ${name}`}
+        aria-label="Bird photo"
         onClose={() => setSelected(null)}
         onClick={(event) => {
           if (event.target === event.currentTarget) dialog.current?.close();
@@ -46,7 +47,7 @@ export default function BirdGallery({ photos, name }: {
         >
           <img src="/icons/close.svg" alt="" />
         </button>
-        {selected && <img className="full-photo" src={selected} alt={name} />}
+        {selected && <img lang="nb" className="full-photo" src={selected} alt={name} />}
       </dialog>
     </>
   );

@@ -13,7 +13,13 @@ export default async function BirdPage({
 }: {
   params: Promise<{ name: string }>;
 }) {
-  const { name } = await params;
+  const { name: encodedName } = await params;
+  let name: string;
+  try {
+    name = decodeURIComponent(encodedName);
+  } catch {
+    notFound();
+  }
   const bird = snapshot.birds.find(
     (item) => birdSlug(item.norwegianName) === birdSlug(name) || String(item.id) === name,
   );
@@ -31,12 +37,12 @@ export default async function BirdPage({
       />
       <div className="bird-detail-content">
         <section className="bird-details" aria-label="Bird details">
-          <h1>
+          <h1 lang="nb">
             {bird.norwegianName[0].toLocaleUpperCase("nb-NO") +
               bird.norwegianName.slice(1)}
           </h1>
           {bird.habitats.length > 0 && (
-            <p className="habitats">
+            <p className="habitats" lang="nb">
               <strong>Levested:</strong> {bird.habitats.join(", ")}
             </p>
           )}
@@ -53,7 +59,8 @@ export default async function BirdPage({
                 controlsList="nodownload noplaybackrate novolume"
                 preload="none"
                 src={bird.media.sound.fileUrl}
-                aria-label={`${bird.norwegianName}'s recording`}
+                lang="nb"
+                aria-label={`Lydopptak av ${bird.norwegianName}`}
               />
             </>
           ) : (

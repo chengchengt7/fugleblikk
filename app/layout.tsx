@@ -6,6 +6,7 @@ import "./global.css";
 export const metadata: Metadata = {
   title: "Fugleblikk",
   description: "",
+  icons: { icon: "/favicon.png" },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

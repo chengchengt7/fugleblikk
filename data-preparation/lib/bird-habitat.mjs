@@ -19,8 +19,10 @@ async function fetchHabitats(id) {
       signal: AbortSignal.timeout(30000),
     },
   );
-  if (response.status === 404) return [];
-  if (!response.ok) throw new Error(`Artsdatabanken HTTP ${response.status}`);
+  if (!response.ok) {
+    console.warn(`Artsdatabanken HTTP ${response.status} for taxon ${id}; continuing without habitat`);
+    return [];
+  }
   return habitatsFromPage(await response.text());
 }
 
